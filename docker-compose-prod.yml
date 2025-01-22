@@ -1,0 +1,66 @@
+version: '3.8'
+
+services:
+    nginx:
+        restart: always
+        image: ghcr.io/shurik-market-team/repository/ms_product_nginx:master
+        ports:
+            - "4000:80"
+        volumes:
+            - ./project:/project
+        depends_on:
+            - php-fpm
+        container_name: nginx
+        networks:
+            - shurik-server
+
+    node-cli:
+        image: ghcr.io/shurik-market-team/repository/ms_product_node-cli:master
+        volumes:
+            - ./project:/project
+        container_name: node-cli
+        networks:
+            - shurik-server
+
+    php-fpm:
+        restart: always
+        image: ghcr.io/shurik-market-team/repository/ms_product_php-fpm:master
+        ports:
+            - "9000:9000"
+        volumes:
+            - ./project:/project
+        depends_on:
+            - maria-db
+        container_name: php-fpm
+        networks:
+            - shurik-server
+
+    php-cli:
+        restart: always
+        image: ghcr.io/shurik-market-team/repository/ms_product_php-cli:master
+        volumes:
+            - ./project:/project
+        container_name: php-cli
+        networks:
+            - shurik-server
+
+    maria-db:
+        restart: always
+        image: mariadb:11.1.3
+        container_name: ${APP_NAME}-db
+        volumes:
+            - ./volumes/database/mysql://var/lib/mysql
+        ports:
+            - "3373:3306"
+        command: [ '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci' ]
+        environment:
+            - MYSQL_PASSWORD=${DATABASE_PASSWORD}
+            - MYSQL_USER=${DATABASE_USER}
+            - MYSQL_DATABASE=${DATABASE_NAME}
+            - MARIADB_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}
+        networks:
+            - shurik-server
+
+networks:
+    shurik-server:
+        external: true

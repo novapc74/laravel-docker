@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+    letsencrypt:
+        ports:
+            - "80:80"
+        image: certbot/certbot:latest
+        command: sh -c "certbot certonly --standalone -d novapc74.twc1.net --text --agree-tos --email novapc74@yandex.ru --server https://acme-v02.api.letsencrypt.org/directory --rsa-key-size 4096 --verbose --keep-until-expiring --preferred-challenges=http"
+        entrypoint: ""
+        volumes:
+            - letsencrypt:/etc/letsencrypt
+        environment:
+            - TERM=xterm
+        networks:
+            - shurik-server
+
+networks:
+    shurik-server:
+        external: true
+
+volumes:
+    letsencrypt:
+        name: letsencrypt_keys
