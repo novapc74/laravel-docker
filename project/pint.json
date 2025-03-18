@@ -1,0 +1,9 @@
+{
+    "preset": "psr12",
+    "rules": {
+        "no_empty_comment": true,
+        "concat_space": {
+            "spacing": "one"
+        }
+    }
+}
